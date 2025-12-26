@@ -7,12 +7,17 @@ dotenv.config();
 import cors from 'cors';
 import connectToDb from "./config/db.js";
 
+import userRouter from './routes/user.routes.js';
+
 connectToDb();
 
+app.use(express.json());
 app.use(cors());
 
-app.use("/", (req, res) => {
-    res.send("server is working fine");
-})
+// app.use("/", (req, res) => {
+//     res.send("server is working fine");
+// })
+
+app.use("/user/", userRouter);
 
 export default app;
