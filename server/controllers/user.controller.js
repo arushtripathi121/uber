@@ -3,7 +3,7 @@ import User from "../models/user.model.js";
 import { createUser } from "../services/user.service.js";
 
 
-export const registerUser = async (req, res, next) => {
+export const registerUser = async (req, res) => {
     try {
         const errors = validationResult(req);
 
@@ -22,7 +22,7 @@ export const registerUser = async (req, res, next) => {
         const token = await user.generateAuthToken();
 
         res.status(200).json({
-            token, user
+            token
         })
     }
     catch(e) {
@@ -31,4 +31,48 @@ export const registerUser = async (req, res, next) => {
             error: e,
         })
     }
+}
+
+export const loginUser = async(req, res) => {
+
+    try {
+
+    const errors = validationResult(req);
+
+        if(!errors.isEmpty()) {
+            return res.status(400).json({
+                errors: errors.array()
+            })
+        }
+
+    const { email, password } = req.body;
+
+    const user = await User.findOne({email});
+
+    if(!user) {
+        return res.status(404).json({
+            errors: 'No user found'
+        })
+    }
+    
+    const checkPassword = await user.comparePassword(password);
+
+    if(!checkPassword) {
+        return res.status(400).json({
+            errors: 'Entered wrong password'
+        })
+    }
+
+    const token = await user.generateAuthToken();
+
+    return res.status(200).json({
+        token
+    })
+}
+catch(e) {
+    console.log(e);
+    return res.status(500).json({
+        errors: 'Internal server error'
+    })
+}
 }
