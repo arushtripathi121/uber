@@ -2,7 +2,8 @@ import express from 'express';
 const router = express.Router();
 
 import {body} from 'express-validator';
-import { loginUser, registerUser } from '../controllers/user.controller.js';
+import { getUserProfile, loginUser, registerUser } from '../controllers/user.controller.js';
+import { authMiddleware } from '../middlewares/auth.middleware.js';
 
 router.post('/register', [
     body('email').isEmail().withMessage('Invalid email'),
@@ -14,5 +15,7 @@ router.post('/login', [
     body('email').isEmail().withMessage('Invalid email'),
     body('password').isLength({min: 8}).withMessage("Password must be at least 8 characters long"),
 ], loginUser);
+
+router.get('/getUserProfile', authMiddleware, getUserProfile)
 
 export default router;
