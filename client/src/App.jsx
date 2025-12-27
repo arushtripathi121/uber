@@ -1,12 +1,15 @@
 import "./App.css";
 import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Auth from "./pages/Auth";
+import HomePage from "./pages/HomePage";
+import { AuthProvider } from "./context/AuthContext";
 
 const AppRouter = () => {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Auth />} />
+        <Route path="/home" element={<HomePage />} />
       </Routes>
     </BrowserRouter>
   );
@@ -15,7 +18,9 @@ const AppRouter = () => {
 function App() {
   return (
     <div>
-      <AppRouter />
+      <AuthProvider>
+        <AppRouter />
+      </AuthProvider>
     </div>
   );
 }

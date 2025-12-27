@@ -23,6 +23,10 @@ const UserModel = new mongoose.Schema({
     },
     socketId: {
         type: String,
+    },
+    role: {
+        type: String,
+        default: "USER"
     }
 }, {
     timestamps: true

@@ -36,6 +36,7 @@ export const authMiddleware = async (req, res, next) => {
       lastName: user.lastName,
       email: user.email,
       socketId: user.socketId,
+      role: user.role,
     };
 
     req.user = returnUser;

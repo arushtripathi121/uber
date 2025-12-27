@@ -12,15 +12,24 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, role } = req.body;
 
     const hashPassword = await User.hashPassword(password);
+
+    const existingUser = await User.findOne({email});
+
+    if(existingUser) {
+      return res.status(400).json({
+        errors: 'User already exist'
+      })
+    }
 
     const user = await createUser({
       firstName,
       lastName,
       email,
       password: hashPassword,
+      role
     });
 
     const token = await user.generateAuthToken();
