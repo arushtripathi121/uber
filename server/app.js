@@ -9,6 +9,7 @@ import cors from 'cors';
 import connectToDb from "./config/db.js";
 
 import userRouter from './routes/user.routes.js';
+import carRouter from './routes/car.routes.js';
 
 connectToDb();
 
@@ -24,5 +25,6 @@ app.use(cors({
 // })
 
 app.use("/user/", userRouter);
+app.use("/car", carRouter);
 
 export default app;

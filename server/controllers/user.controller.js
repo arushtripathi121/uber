@@ -1,6 +1,8 @@
 import { validationResult } from "express-validator";
 import User from "../models/user.model.js";
+import Car from "../models/car.model.js";
 import { createUser } from "../services/user.service.js";
+import jwt from "jsonwebtoken";
 
 export const registerUser = async (req, res) => {
   try {
@@ -16,12 +18,12 @@ export const registerUser = async (req, res) => {
 
     const hashPassword = await User.hashPassword(password);
 
-    const existingUser = await User.findOne({email});
+    const existingUser = await User.findOne({ email });
 
-    if(existingUser) {
+    if (existingUser) {
       return res.status(400).json({
-        errors: 'User already exist'
-      })
+        errors: "User already exist",
+      });
     }
 
     const user = await createUser({
@@ -29,12 +31,14 @@ export const registerUser = async (req, res) => {
       lastName,
       email,
       password: hashPassword,
-      role
+      role,
     });
 
-    const token = await user.generateAuthToken();
+    const token = await jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
-    res.cookie('user', token);
+    res.cookie("user", token);
 
     res.status(200).json({
       token,
@@ -75,12 +79,15 @@ export const loginUser = async (req, res) => {
       });
     }
 
-    const token = await user.generateAuthToken();
+    const token = await jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "7d",
+    });
 
-    res.cookie('user', token);
+    res.cookie("user", token);
 
     return res.status(200).json({
       token,
+      user,
     });
   } catch (e) {
     console.log(e);
@@ -90,14 +97,23 @@ export const loginUser = async (req, res) => {
   }
 };
 
-export const getUserProfile = async(req, res) => {
-    try {
-        res.status(200).json(req.user);
+export const getUserProfile = async (req, res) => {
+  try {
+    const { id, role } = req.user;
+
+    let captainDetails = false;
+    if (role === "DRIVER") {
+      const captain = await Car.findOne({ captain: id });
+      if (captain) {
+        captainDetails = true;
+      }
     }
-    catch(e) {
-        console.log(e);
-        res.status(500).json({
-            errors: 'Internal server error'
-        })
-    }
-}
+
+    res.status(200).json({user: req.user, captainDetails});
+  } catch (e) {
+    console.log(e);
+    res.status(500).json({
+      errors: "Internal server error",
+    });
+  }
+};

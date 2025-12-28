@@ -23,8 +23,8 @@ export const authMiddleware = async (req, res, next) => {
 
     const { id } = decoded;
 
-    const user = await User.findOne({});
-
+    const user = await User.findById(id);
+    
     if (!user) {
       return res.status(400).json({
         errors: "No user found",
@@ -32,6 +32,7 @@ export const authMiddleware = async (req, res, next) => {
     }
 
     const returnUser = {
+      id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,

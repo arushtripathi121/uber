@@ -3,6 +3,7 @@ import { Routes, Route, BrowserRouter } from "react-router-dom";
 import Auth from "./pages/Auth";
 import HomePage from "./pages/HomePage";
 import { AuthProvider } from "./context/AuthContext";
+import { BookProvider } from "./context/BookContext";
 
 const AppRouter = () => {
   return (
@@ -19,7 +20,9 @@ function App() {
   return (
     <div>
       <AuthProvider>
-        <AppRouter />
+        <BookProvider>
+          <AppRouter />
+        </BookProvider>
       </AuthProvider>
     </div>
   );
